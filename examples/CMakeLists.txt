@@ -99,3 +99,71 @@ target_link_libraries(
     PRIVATE
         TermOx
 )
+
+# Hello -------------------------------------------------------------------------------
+add_executable(TermOx.examples.hello EXCLUDE_FROM_ALL
+    hello.cpp
+)
+target_compile_options(
+    TermOx.examples.hello
+    PRIVATE
+        -Wall
+        -Wextra
+        -Wpedantic
+)
+target_link_libraries(
+    TermOx.examples.hello
+    PRIVATE
+        TermOx
+)
+
+# Form --------------------------------------------------------------------------------
+add_executable(TermOx.examples.form EXCLUDE_FROM_ALL
+    form.cpp
+)
+target_compile_options(
+    TermOx.examples.form
+    PRIVATE
+        -Wall
+        -Wextra
+        -Wpedantic
+)
+target_link_libraries(
+    TermOx.examples.form
+    PRIVATE
+        TermOx
+)
+
+# Progress ----------------------------------------------------------------------------
+add_executable(TermOx.examples.progress EXCLUDE_FROM_ALL
+    progress.cpp
+)
+target_compile_options(
+    TermOx.examples.progress
+    PRIVATE
+        -Wall
+        -Wextra
+        -Wpedantic
+)
+target_link_libraries(
+    TermOx.examples.progress
+    PRIVATE
+        TermOx
+)
+
+# Panels ------------------------------------------------------------------------------
+add_executable(TermOx.examples.panels EXCLUDE_FROM_ALL
+    panels.cpp
+)
+target_compile_options(
+    TermOx.examples.panels
+    PRIVATE
+        -Wall
+        -Wextra
+        -Wpedantic
+)
+target_link_libraries(
+    TermOx.examples.panels
+    PRIVATE
+        TermOx
+)
