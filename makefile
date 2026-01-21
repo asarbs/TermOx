@@ -18,6 +18,7 @@ EXAMPLES := \
 	TermOx.examples.hello \
 	TermOx.examples.form \
 	TermOx.examples.progress \
+	TermOx.examples.tabs \
 	TermOx.examples.panels
 
 .PHONY: all examples configure clean $(EXAMPLES)
