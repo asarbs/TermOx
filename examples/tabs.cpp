@@ -41,6 +41,7 @@ class Notebook : public Widget {
                 .signal = buttons.children.back().child.on_press,
                 .slot = [index](Notebook& notebook) { notebook.select(index); },
             }(*this);
+            this->resize(this->size);
         }
 
         void select(std::size_t i) {
@@ -93,40 +94,76 @@ class Notebook : public Widget {
         }
 };
 
+template <typename T>
+auto make_widget(T&& widget) -> std::unique_ptr<Widget>
+{
+    using WidgetType = std::decay_t<T>;
+    return std::make_unique<WidgetType>(std::forward<T>(widget));
+}
+
 int main()
 {
+    auto upper_label = Label{{.text = "Upper label on first tab", .align = Align::Center}};
+
+    auto lower_button = Button{{
+        .label = {
+            .text = "Lower Button on first tab",
+            .brush = {
+                .background = XColor::Blue,
+                .traits = Trait::Bold,
+            },
+        },
+        .size_policy = SizePolicy::fixed(1)
+    }};
+
     auto notebook = Notebook{};
+    auto first_tab_column = Column(std::move(upper_label), std::move(lower_button))
+        | Border{.box = shape::Box::round(), .label = "First Tab Column with border"}
+        | SizePolicy::fixed(16);
+    auto& tab_1_button = get_child<1>(first_tab_column);
+
+    uint32_t clickCounter = 6;
+    Connection{
+        .signal = tab_1_button.on_press,
+        .slot = [&clickCounter] (auto& notebook) {
+            std::string tabNameText = "Tab " + std::to_string(clickCounter);
+            std::string tabContentLabelText = "Tab Content " + std::to_string(clickCounter);
+            notebook.add_page({
+                .label = tabNameText,
+                .content = make_widget(Label{{.text = tabContentLabelText, .align = Align::Left }})
+            });
+
+            clickCounter++;
+        }
+    }(notebook);
+
+
     notebook.add_page({
         .label = "Tab 1",
         .background = XColor::BrightGreen,
-        .content = std::make_unique<Label>(
-            Label{{.text = "Tab Content 1", .align = Align::Center}}),
+        .content = make_widget(std::move(first_tab_column)),
     });
     notebook.add_page({
         .label = "Tab 2",
         .background = XColor::Yellow,
-        .content = std::make_unique<Label>(
-            Label{{.text = "Tab Content 2", .align = Align::Center}}),
+        .content = make_widget(Label{{.text = "Tab Content 2", .align = Align::Center}}),
     });
 
     notebook.add_page({
         .label = "Tab 3",
         .background = XColor::Red,
-        .content = std::make_unique<Label>(
-            Label{{.text = "Tab Content 3", .align = Align::Center}}),
+        .content = make_widget(Label{{.text = "Tab Content 3", .align = Align::Center}}),
     });
 
     notebook.add_page({
         .label = "Tab 4",
-        .content = std::make_unique<Label>(
-            Label{{.text = "Tab Content 4", .align = Align::Center}}),
+        .content = make_widget(Label{{.text = "Tab Content 4", .align = Align::Center}}),
     });
 
     notebook.add_page({
         .label = "Tab 5",
         .background = XColor::BrightMagenta,
-        .content = std::make_unique<Label>(
-            Label{{.text = "Tab Content 5", .align = Align::Center}}),
+        .content = make_widget(Label{{.text = "Tab Content 5", .align = Align::Center}}),
     });
 
     auto ui = std::move(notebook) | Border{.box = shape::Box::round(), .label = "Tabs"};
