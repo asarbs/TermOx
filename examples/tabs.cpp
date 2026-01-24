@@ -16,6 +16,28 @@ class Notebook : public Widget {
         std::size_t active = 0;
         static constexpr int button_row_height = 3;
 
+        Notebook() {
+            buttons.children.emplace_back(
+            Button{
+                        {
+                        .label =
+                            {
+                                .text = "x",
+                                .brush =
+                                    {
+                                        .background = XColor::Red,
+                                        .traits     = Trait::Bold
+                                    },
+                            },
+                        }
+                    } | Border{.box = shape::Box::round()}
+            );
+            Connection{
+                .signal = buttons.children.back().child.on_press,
+                .slot = [](Notebook& notebook) { notebook.close_active_page(); } ,
+            }(*this);
+        }
+
         void add_page(Page x) {
             auto index = pages.size();
             buttons.children.emplace_back(
@@ -37,10 +59,7 @@ class Notebook : public Widget {
             if(active != index) {
                 pages.back().content->active = false;
             }
-            Connection{
-                .signal = buttons.children.back().child.on_press,
-                .slot = [index](Notebook& notebook) { notebook.select(index); },
-            }(*this);
+            rebind_tab_buttons();
             this->resize(this->size);
         }
 
@@ -90,6 +109,35 @@ class Notebook : public Widget {
                 };
                 // Notify the content widget about its new size.
                 content.resize(old_page_size);
+            }
+        }
+
+        void close_active_page() {
+            if(pages.size() <= 1) {
+                return;
+            }
+            auto button_to_close = buttons.children.begin() + active + 1;
+            buttons.children.erase(button_to_close);
+
+            auto page_to_close = pages.begin() + active;
+            pages.erase(page_to_close);
+            rebind_tab_buttons();
+
+            active = std::min(active, pages.size()-1);
+            select(active == 0 ? 0 : active - 1);
+
+            this->resize(this->size);
+        }
+
+        void rebind_tab_buttons()
+        {
+            for (std::size_t i = 0; i < pages.size(); ++i) {
+                auto& button = buttons.children[i + 1].child; // +1 bo 0 to "x"
+                button.on_press = {}; // usuń stare sloty
+                Connection{
+                    .signal = button.on_press,
+                    .slot = [i](Notebook& notebook) { notebook.select(i); },
+                }(*this);
             }
         }
 };
