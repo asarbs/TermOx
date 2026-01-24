@@ -35,6 +35,7 @@ add_library(TermOx STATIC
     src/timer.cpp
     src/widget.cpp
     src/core/terminal.cpp
+    src/notebook.cpp
 
     include/ox/ox.hpp
     include/ox/align.hpp
@@ -54,6 +55,7 @@ add_library(TermOx STATIC
     include/ox/textbox.hpp
     include/ox/timer.hpp
     include/ox/widget.hpp
+    include/ox/notebook.hpp
 
     include/ox/core/common.hpp
     include/ox/core/core.hpp

@@ -184,3 +184,20 @@ target_link_libraries(
     PRIVATE
         TermOx
 )
+
+#Tabs on right
+add_executable(TermOx.examples.tabsOnRight EXCLUDE_FROM_ALL
+    tabs_on_right.cpp
+)
+target_compile_options(
+    TermOx.examples.tabsOnRight
+    PRIVATE
+        -Wall
+        -Wextra
+        -Wpedantic
+)
+target_link_libraries(
+    TermOx.examples.tabsOnRight
+    PRIVATE
+        TermOx
+)

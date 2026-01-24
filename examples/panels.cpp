@@ -16,12 +16,12 @@ auto make_left_panel()
                 .traits     = Trait::Bold
             },
         },
-        .size_policy = SizePolicy::fixed(2),
+        .size_policy = SizePolicy::fixed(4),
     }};
 
     return Column{std::move(left_label), std::move(left_button)}
         | Border{.box = shape::Box::round(), .label = "Left"}
-        | SizePolicy::fixed(16);
+        | SizePolicy::fixed(32);
 }
 
 auto make_right_panel()

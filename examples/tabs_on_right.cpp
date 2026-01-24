@@ -4,21 +4,10 @@
 
 using namespace ox;
 
-int main()
+
+auto make_right_panel()
 {
     auto upper_label = Label{{.text = "Upper label on first tab", .align = Align::Center}};
-
-    auto lower_button = Button{{
-        .label = {
-            .text = "Lower Button on first tab",
-            .brush = {
-                .background = XColor::Blue,
-                .traits = Trait::Bold,
-            },
-        },
-        .size_policy = SizePolicy::fixed(1)
-    }};
-
 
     auto notebook = Notebook{};
     auto first_tab_column = Column(std::move(upper_label))
@@ -52,18 +41,45 @@ int main()
         .background = XColor::BrightMagenta,
         .content = make_widget(Label{{.text = "Tab Content 5", .align = Align::Center}}),
     });
+    return notebook;
+}
 
-    auto left_column = Column{
-                        Label{{.text = "Left Column", .align = Align::Center}},
-                        std::move(lower_button)
-    };
+auto make_left_panel()
+{
 
-    auto& tab_1_button = get_child<1>(left_column);
+    auto lower_button = Button{{
+        .label = {
+            .text = "Lower Button on first tab",
+            .brush = {
+                .background = XColor::Blue,
+                .traits = Trait::Bold,
+            },
+        },
+        .size_policy = SizePolicy::fixed(1)
+    }};
+
+
+    auto right_label = Label{{.text = "Right panel (fixed 60)", .align = Align::Center}};
+    return Column{std::move(right_label), std::move(lower_button)}
+        | Border{.box = shape::Box::round(), .label = "Right"}
+        | SizePolicy::fixed(32);
+}
+
+auto make_divider()
+{
+    return Divider{{.lines = Lines::bold(), .brush = {.foreground = XColor::BrightBlack}}};
+}
+
+int main()
+{
+    auto left_panel = make_left_panel();
+    auto& lower_button = get_child<1>(left_panel);
+    auto notebook = make_right_panel();
 
     uint32_t clickCounter = 6;
     Connection{
-        .signal = tab_1_button.on_press,
-        .slot = [&clickCounter] (auto& notebook) {
+        .signal = lower_button.on_press,
+        .slot = [&clickCounter](auto& notebook) {
             std::string tabNameText = "Tab " + std::to_string(clickCounter);
             std::string tabContentLabelText = "Tab Content " + std::to_string(clickCounter);
             notebook.add_page({
@@ -75,8 +91,8 @@ int main()
         }
     }(notebook);
 
-
-    auto main_screen = Row{ std::move(left_column), std::move(notebook)} | Border{.box = shape::Box::round(), .label = "Main Screen"};
+    auto main_screen = Row{std::move(left_panel), make_divider(), std::move(notebook)}
+        | Border{.box = shape::Box::round(), .label = "Main Box"};
 
     auto ui = std::move(main_screen) | Border{.box = shape::Box::round(), .label = "Tabs"};
 
